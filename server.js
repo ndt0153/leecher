@@ -12,6 +12,9 @@ app
     server.get("/apk/:id", (req, res) => {
       return app.render(req, res, "/apk", { id: req.params.id });
     });
+    server.get("/page/:id", (req, res) => {
+      return app.render(req, res, "/page", { id: req.params.id });
+    });
     server.get("*", (req, res) => {
       return handle(req, res);
     });

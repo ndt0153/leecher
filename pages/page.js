@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import Link from "next/link";
 import "../index.css";
 import fetch from "isomorphic-unfetch";
-export default class Home extends Component {
+export default class Page extends Component {
   constructor() {
     super();
     this.state = {
@@ -10,27 +10,26 @@ export default class Home extends Component {
       data: []
     };
   }
-  static async getInitialProps(params) {
+  static async getInitialProps(context) {
     try {
-      const id = params;
-      console.log(id);
-      //const params = new URLSearchParams(search);
-      const page = parseInt() || 1;
-
-      fetch(`http://localhost:2000/page?page=${page}`, { method: "GET" })
-        .then(res => res.json())
-        .then(({ pager, data }) => {
-          console.log("fix");
-        });
+      const { id } = context.query;
+      const page = (await parseInt(id)) || 1;
+      const res = await fetch(`http://localhost:2000/page?page=${page}`);
+      const data = await res.json();
+      return { data };
     } catch (e) {
       console.log(e);
     }
   }
-
+  componentDidMount() {
+    this.setState({ data: this.props.data.data, pager: this.props.data.pager });
+  }
   loadPage = () =>
-    this.state.pager.pages.map((value, key) => (
+    this.props.data.pager.pages.map((value, key) => (
       <a
-        className={`${this.state.pager.currentPage === value ? "active" : ""}`}
+        className={`${
+          this.props.data.pager.currentPage === value ? "active" : ""
+        }`}
         key={key}
         href={`/?page=${value}`}
       >
@@ -38,8 +37,8 @@ export default class Home extends Component {
       </a>
     ));
   render() {
-    const { pager, data } = this.state;
-
+    const { pager, data } = this.props.data;
+    console.log(this.props.data);
     return (
       <div className="home">
         <h3>APK Toi co</h3>
