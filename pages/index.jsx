@@ -1,58 +1,71 @@
-import React from "react";
-import Nav from "../components/apk";
+import React, { Component } from "react";
+import Link from "next/link";
+import "../index.css";
+import fetch from "isomorphic-unfetch";
+export default class Home extends Component {
+  constructor() {
+    super();
+    this.state = {
+      pager: {},
+      data: []
+    };
+  }
+  componentDidMount() {
+    this.loadData();
+  }
+  loadData() {
+    const params = new URLSearchParams(location.search);
+    const page = parseInt(params.get("page")) || 1;
+    if (page !== this.state.pager.currentPage) {
+      fetch(`http://localhost:2000/page?page=${page}`, { method: "GET" })
+        .then(res => res.json())
+        .then(({ pager, data }) => {
+          this.setState({ pager, data });
+        });
+    }
+  }
+  loadPage = () =>
+    this.state.pager.pages.map((value, key) => (
+      <a
+        className={`${this.state.pager.currentPage === value ? "active" : ""}`}
+        key={key}
+        href={`/?page=${value}`}
+      >
+        {value}
+      </a>
+    ));
+  render() {
+    const { pager, data } = this.state;
 
-Home.get;
-const Home = () => (
-  <div>
-    <h1>Các APK đang có</h1>
+    return (
+      <div className="home">
+        <h3>APK Toi co</h3>
+        <div className="card-body">
+          {data.map(item => (
+            <a href={`/apk/${item.id}`} key={item.id} className="apk">
+              {item.Title}
+            </a>
+          ))}
+        </div>
+        <div className="card-footer">
+          {pager.currentPage === 1 ? (
+            ""
+          ) : (
+            <a href={`/?page=${pager.currentPage - 1}`}>
+              <span className="back">Lùi</span>
+            </a>
+          )}
 
-    <style jsx>{`
-      .hero {
-        width: 100%;
-        color: #333;
-      }
-      .title {
-        margin: 0;
-        width: 100%;
-        padding-top: 80px;
-        line-height: 1.15;
-        font-size: 48px;
-      }
-      .title,
-      .description {
-        text-align: center;
-      }
-      .row {
-        max-width: 880px;
-        margin: 80px auto 40px;
-        display: flex;
-        flex-direction: row;
-        justify-content: space-around;
-      }
-      .card {
-        padding: 18px 18px 24px;
-        width: 220px;
-        text-align: left;
-        text-decoration: none;
-        color: #434343;
-        border: 1px solid #9b9b9b;
-      }
-      .card:hover {
-        border-color: #067df7;
-      }
-      .card h3 {
-        margin: 0;
-        color: #067df7;
-        font-size: 18px;
-      }
-      .card p {
-        margin: 0;
-        padding: 12px 0 0;
-        font-size: 13px;
-        color: #333;
-      }
-    `}</style>
-  </div>
-);
-
-export default Home;
+          {pager.pages ? this.loadPage() : ""}
+          {pager.currentPage === pager.totalPages ? (
+            ""
+          ) : (
+            <a href={`/?page=${pager.currentPage + 1}`}>
+              <span className="back">Tới</span>
+            </a>
+          )}
+        </div>
+      </div>
+    );
+  }
+}

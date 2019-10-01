@@ -12,17 +12,25 @@ export default function ApkPage(props) {
     <div>
       <div className="title">
         <h2>{props.data.Title}</h2>
+        <img src={props.data.Image} alt="" className="Banner" />
       </div>
       <div className="info">
-        <span className="publish">{props.data.Publist}</span>
-        <span className="genre">{props.data.Category.toString()}</span>
+        <span className="publish">{props.data.Publish}</span>
+        <span className="genre">{props.data.Category}</span>
         <span className="version">{props.data.Version}</span>
         <span className="size">{props.data.Size}</span>
         <span className="mod">{props.data.Mod}</span>
         <span className="platfrom">{props.data.PlatFrom}</span>
-        <span className="link">{props.data.Link}</span>
+        <span className="link">
+          {props.data.Link
+            ? "https://apkease.com/2019/09/" + props.data.Link
+            : ""}
+        </span>
       </div>
-      <div className="content">{props.data.content}</div>
+      <div
+        className="content"
+        dangerouslySetInnerHTML={{ __html: props.data.Content }}
+      ></div>
       <style jsx>{`
         span {
           display: block;
